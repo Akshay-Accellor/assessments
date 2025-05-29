@@ -1,0 +1,34 @@
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
+def test_identify_customer_needs(url, username, password):
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    try:
+        driver.get(url)
+        # Login
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "login"))).send_keys(username)
+        driver.find_element(By.ID, "password").send_keys(password)
+        driver.find_element(By.ID, "login_button").click()
+
+        # Navigate to needs identification page
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "needs_identification"))).click()
+        assert driver.find_element(By.ID, "customer_profile").is_displayed()
+
+        # Select customer profile
+        driver.find_element(By.ID, "customer_profile").click()
+        assert driver.find_element(By.ID, "identify_needs").is_displayed()
+        driver.find_element(By.ID, "identify_needs").click()
+        time.sleep(1)
+        assert driver.find_element(By.ID, "needs_assessment").is_displayed()
+        driver.find_element(By.ID, "needs_details").send_keys("Identify product requirements.")
+        print("Test completed successfully.")
+    except Exception as e:
+        print(f"Test failed: {e}")
+    finally:
+        driver.quit()
