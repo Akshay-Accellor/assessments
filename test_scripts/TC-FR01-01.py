@@ -1,0 +1,18 @@
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+import time
+def test_login_valid():
+ driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+ try:
+ driver.get("http://maya-platform-url.com/login")
+ driver.find_element(By.ID, "username").send_keys("validUser")
+ driver.find_element(By.ID, "password").send_keys("validPass")
+ driver.find_element(By.ID, "loginBtn").click()
+ time.sleep(2)
+ assert "Chat Interface" in driver.title
+ print("Login successful with valid credentials.")
+ finally:
+ driver.quit()
