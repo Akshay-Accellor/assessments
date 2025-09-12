@@ -1,22 +1,33 @@
-
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
-
-def filter_pro_number_valid():
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    try:
-        driver.get("URL")
-        driver.find_element(By.ID, "filter_menu").click()
-        driver.find_element(By.XPATH, "//select[@id='filter_criteria']/option[text()='Contains']").click()
-        driver.find_element(By.ID, "pro_number_input").send_keys("12345")
-        driver.find_element(By.ID, "apply_pro_filters").click()
-        assert "filtered results" in driver.page_source
-    except Exception as e:
-        print(f"Filtering by PRO Number failed: {e}")
-    finally:
-        driver.quit()
+Typescript
+import { browser, $ } from '@wdio/globals';
+import { expect } from 'chai';
+describe('FR-03: A/B Testing Support', () => {
+    before(async () => { await browser.url('http://www.ipsy.com/admin/ab-testing'); });
+    it('Positive - Verify support for A/B testing framework integration', async () => {
+        const abInterface = await $('.ab-interface');
+        await expect(abInterface).toBeDisplayed();
+        const createForm = await $('.create-test-form');
+        await createForm.setValue('Test Name');
+        const saveButton = await $('.save-test');
+        await saveButton.click();
+        const successMessage = await $('.success-message');
+        await expect(successMessage).toBeDisplayed();
+    });
+    it('Negative - Verify A/B test creation fails without required fields', async () => {
+        const saveButton = await $('.save-test');
+        await saveButton.click();
+        const errorMessage = await $('.error-message');
+        await expect(errorMessage).toBeDisplayed();
+    });
+    it('Edge - Verify A/B test with multiple variants', async () => {
+        const createForm = await $('.create-test-form');
+        await createForm.setValue('Edge Test');
+        const addVariant = await $('.add-variant');
+        await addVariant.click();
+        await addVariant.click();
+        const saveButton = await $('.save-test');
+        await saveButton.click();
+        const successMessage = await $('.success-message');
+        await expect(successMessage).toBeDisplayed();
+    });
+});
