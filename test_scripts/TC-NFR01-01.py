@@ -1,0 +1,1 @@
+Automation scripts are scoped out for test scenarios.
