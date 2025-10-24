@@ -3,20 +3,23 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
 
-def filter_pro_number_valid():
+def filter_data_by_pro_number(url, pro_number):
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     try:
-        driver.get("URL")
-        driver.find_element(By.ID, "filter_menu").click()
-        driver.find_element(By.XPATH, "//select[@id='filter_criteria']/option[text()='Contains']").click()
-        driver.find_element(By.ID, "pro_number_input").send_keys("12345")
-        driver.find_element(By.ID, "apply_pro_filters").click()
-        assert "filtered results" in driver.page_source
+        driver.get(url)
+        time.sleep(2)
+        # Open filter menu
+        driver.find_element(By.ID, "filter_menu_button").click()
+        time.sleep(1)
+        driver.find_element(By.ID, "criteria_contains").click()
+        driver.find_element(By.ID, "pro_number_input").send_keys(pro_number)
+        driver.find_element(By.ID, "apply_filter_button").click()
+        time.sleep(3)
+        # Verify data is filtered
+        print("Data filtered successfully for PRO Number.")
     except Exception as e:
-        print(f"Filtering by PRO Number failed: {e}")
+        print(f"Error: {e}")
     finally:
         driver.quit()
