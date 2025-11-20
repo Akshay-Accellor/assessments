@@ -6,19 +6,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-
-def filter_by_date_invalid():
+def filter_invalid_date_selection(url, start_date, end_date):
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     try:
-        driver.get("URL")
-        driver.find_element(By.ID, "start_date").click()
-        driver.find_element(By.XPATH, "//td[contains(@class, 'day') and text()='10']").click()
-        driver.find_element(By.ID, "end_date").click()
-        driver.find_element(By.XPATH, "//td[contains(@class, 'day') and text()='1']").click()
-        assert "error message" in driver.page_source
-        driver.find_element(By.ID, "apply_filters").click()
-        assert "no results" in driver.page_source
+        driver.get(url)
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "start_date"))
+        ).send_keys(start_date)
+        driver.find_element(By.ID, "end_date").send_keys(end_date)
+        driver.find_element(By.ID, "apply_filter").click()
+        time.sleep(3)
+        assert "End date must be after start date" in driver.page_source
+        print("Correct error message displayed for invalid date filter.")
     except Exception as e:
-        print(f"Filtering failed: {e}")
+        print(f"Filtering process failed: {e}")
     finally:
         driver.quit()
