@@ -6,17 +6,21 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-
-def filter_pro_number_invalid():
+def filter_invalid_pro_number(url, pro_number):
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     try:
-        driver.get("URL")
-        driver.find_element(By.ID, "filter_menu").click()
-        driver.find_element(By.XPATH, "//select[@id='filter_criteria']/option[text()='Contains']").click()
-        driver.find_element(By.ID, "pro_number_input").send_keys("invalid")
-        driver.find_element(By.ID, "apply_pro_filters").click()
-        assert "no results" in driver.page_source
+        driver.get(url)
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "filter_button"))
+        ).click()
+        time.sleep(2)
+        driver.find_element(By.ID, "filter_criteria").send_keys('Contains')
+        driver.find_element(By.ID, "pro_number").send_keys(pro_number)
+        driver.find_element(By.ID, "apply_filter").click()
+        time.sleep(3)
+        assert "No results found" in driver.page_source
+        print("No results message displayed correctly for invalid PRO Number.")
     except Exception as e:
-        print(f"Filtering by PRO Number failed: {e}")
+        print(f"PRO Number filtering process failed: {e}")
     finally:
         driver.quit()
